@@ -24,6 +24,7 @@ class Product extends Model
         'id_category',
         'name',
         'completed',
+        'details',
     ];
 
     // Casts (para que completed sea boolean en PHP)

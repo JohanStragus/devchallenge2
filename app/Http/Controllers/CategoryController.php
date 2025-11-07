@@ -24,7 +24,7 @@ class CategoryController extends Controller
         // Si quieres reutilizar por nombre globalmente, descomenta:
         // $category = Category::firstOrCreate(['name' => $data['name']]);
 
-        $category = Category::create(['name' => $data['name']]);
+        $category = Category::firstOrCreate(['name' => $data['name']]);
 
         // Adjuntar a la lista sin duplicar
         $list->categories()->syncWithoutDetaching($category->id_category);

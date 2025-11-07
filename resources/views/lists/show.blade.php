@@ -7,7 +7,18 @@
 </head>
 <body>
   <p><a href="{{ route('lists.page') }}">← Volver</a></p>
-  <h1>{{ $list->name }}</h1>
+
+  <h1 id="listName">{{ $list->name }}</h1>
+
+  @can('update', $list)
+    <form id="editListForm" style="display:none;">
+      <input id="editListInput" type="text" value="{{ $list->name }}" required>
+      <button type="submit">Guardar</button>
+      <button type="button" id="cancelEdit">Cancelar</button>
+    </form>
+    <button id="editListBtn">✏️ Editar lista</button>
+  @endcan
+
   <p>Propietario: <strong>{{ $list->owner->name ?? '—' }}</strong></p>
 
   {{-- COMPARTIR (solo owner) --}}
@@ -15,11 +26,15 @@
   <section>
     <h2>Compartir lista</h2>
 
-    <ul>
-      @foreach($list->members as $m)
-        <li>{{ $m->name }} — <em>{{ $m->pivot->role }}</em></li>
-      @endforeach
-    </ul>
+    @if($list->members->count())
+      <ul>
+        @foreach($list->members as $m)
+          <li>{{ $m->name }} — <em>{{ $m->pivot->role }}</em></li>
+        @endforeach
+      </ul>
+    @else
+      <p>(sin miembros todavía)</p>
+    @endif
 
     <form id="inviteForm">
       <input id="inviteEmail" type="email" placeholder="email@ejemplo.com" required>
@@ -65,8 +80,13 @@
     <ul>
       @forelse($list->products as $p)
         <li>
-          {{ $p->name }}
-          <small>@if($p->completed) (✔ completado) @endif</small>
+          <div>
+            <strong>{{ $p->name }}</strong>
+            <small>@if($p->completed) (✔ completado) @endif</small>
+          </div>
+          @if(!empty($p->details))
+            <div><em>Detalles:</em> {{ $p->details }}</div>
+          @endif
 
           @can('toggle', [\App\Models\Product::class, $list])
             <form class="prod-toggle" action="/lists/{{ $list->id }}/products/{{ $p->id_product }}/toggle" method="post" style="display:inline">
@@ -96,6 +116,7 @@
             <option value="{{ $c->id_category }}">{{ $c->name }}</option>
           @endforeach
         </select>
+        <input id="prodDetails" type="text" placeholder="Detalles (opcional)">
         <button type="submit">Añadir</button>
       </form>
     @endcan
@@ -130,6 +151,14 @@
 
 <script>
 const token = document.querySelector('meta[name="csrf-token"]').content;
+async function postJson(url, body){
+  const res = await fetch(url, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','X-CSRF-TOKEN':token,'Accept':'application/json'},
+    body: JSON.stringify(body)
+  });
+  return res;
+}
 
 // Compartir por email
 const invite = document.getElementById('inviteForm');
@@ -138,16 +167,9 @@ if(invite){
     e.preventDefault();
     const email = document.getElementById('inviteEmail').value.trim();
     const role  = document.getElementById('inviteRole').value;
-    const res = await fetch('/lists/{{ $list->id }}/members', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','X-CSRF-TOKEN':token,'Accept':'application/json'},
-      body: JSON.stringify({ email, role })
-    });
+    const res = await postJson('/lists/{{ $list->id }}/members', { email, role });
     if(res.ok) location.reload();
-    else {
-      const j = await res.json().catch(()=>null);
-      alert(j?.message || 'Error al invitar');
-    }
+    else { const j = await res.json().catch(()=>null); alert(j?.message || 'Error al invitar'); }
   });
 }
 
@@ -158,10 +180,7 @@ if(catAdd){
     e.preventDefault();
     const name = document.getElementById('catName').value.trim();
     if(!name) return;
-    const res = await fetch(`/lists/{{ $list->id }}/categories`, {
-      method:'POST', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':token,'Accept':'application/json'},
-      body: JSON.stringify({name})
-    });
+    const res = await postJson(`/lists/{{ $list->id }}/categories`, {name});
     if(res.ok) location.reload(); else alert('Error categoría');
   });
 }
@@ -180,11 +199,9 @@ if(prodAdd){
     e.preventDefault();
     const name = document.getElementById('prodName').value.trim();
     const id_category = document.getElementById('prodCat').value;
+    const details = document.getElementById('prodDetails').value.trim();
     if(!name || !id_category) return;
-    const res = await fetch(`/lists/{{ $list->id }}/products`, {
-      method:'POST', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':token,'Accept':'application/json'},
-      body: JSON.stringify({name, id_category})
-    });
+    const res = await postJson(`/lists/{{ $list->id }}/products`, {name, id_category, details});
     if(res.ok) location.reload(); else alert('Error producto');
   });
 }
@@ -210,10 +227,7 @@ if(cAdd){
     e.preventDefault();
     const content = document.getElementById('cText').value.trim();
     if(!content) return;
-    const res = await fetch(`/lists/{{ $list->id }}/comments`, {
-      method:'POST', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':token,'Accept':'application/json'},
-      body: JSON.stringify({content})
-    });
+    const res = await postJson(`/lists/{{ $list->id }}/comments`, {content});
     if(res.ok) location.reload(); else alert('Error comentario');
   });
 }
@@ -224,6 +238,48 @@ document.querySelectorAll('form.c-del').forEach(f=>{
     if(res.ok) location.reload(); else alert('Error borrando comentario');
   });
 });
+
+// Editar nombre de la lista
+const editBtn = document.getElementById('editListBtn');
+if(editBtn){
+  const form = document.getElementById('editListForm');
+  const input = document.getElementById('editListInput');
+  const cancel = document.getElementById('cancelEdit');
+  const h1 = document.getElementById('listName') || document.querySelector('h1');
+
+  editBtn.addEventListener('click', () => {
+    editBtn.style.display = 'none';
+    form.style.display = 'block';
+    input.focus();
+  });
+
+  if(cancel){
+    cancel.addEventListener('click', () => {
+      form.style.display = 'none';
+      editBtn.style.display = 'inline';
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = input.value.trim();
+    if(!name) return alert('El nombre no puede estar vacío');
+
+    const res = await fetch(`/lists/{{ $list->id }}`, {
+      method:'PUT',
+      headers:{'Content-Type':'application/json','X-CSRF-TOKEN':token,'Accept':'application/json'},
+      body: JSON.stringify({ name })
+    });
+
+    if(res.ok){
+      if(h1) h1.textContent = name; else location.reload();
+      form.style.display = 'none';
+      editBtn.style.display = 'inline';
+    }else{
+      alert('Error al actualizar el nombre');
+    }
+  });
+}
 </script>
 </body>
 </html>

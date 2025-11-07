@@ -79,7 +79,7 @@ Route::delete('/lists/{list}/members/{user}', [ListMemberController::class, 'des
 
     // LISTS API
     Route::apiResource('lists', App\Http\Controllers\ListController::class)
-        ->only(['store','destroy']);
+    ->only(['store','update','destroy']);
 });
 
 // NO BORRAR

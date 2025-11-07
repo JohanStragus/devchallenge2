@@ -19,12 +19,14 @@ class ProductController extends Controller
         $data = $request->validate([
             'name'        => ['required', 'string', 'max:255'],
             'id_category' => ['required', 'exists:categories,id_category'],
+            'details'     => ['nullable','string','max:1000'],
         ]);
 
         $product = Product::create([
             'id_category' => $data['id_category'],
             'name'        => $data['name'],
             'completed'   => false,
+            'details'     => $data['details'] ?? null, 
         ]);
 
         // Asociar el producto a la lista
@@ -58,6 +60,7 @@ class ProductController extends Controller
         $data = $request->validate([
             'name'        => ['nullable', 'string', 'max:255'],
             'id_category' => ['nullable', 'exists:categories,id_category'],
+            'details'     => ['nullable','string','max:1000'],
         ]);
 
         $product->update(array_filter($data)); // solo campos enviados

@@ -35,7 +35,8 @@ class ProductPolicy
     // $this->authorize('delete', [Product::class, $list])
     public function delete(User $user, ListModel $list): bool
     {
-        return $user->id === $list->id_user; // solo owner borra
+        // Ahora: owner o editor (pueden quitar productos de la lista)
+        return $this->canEditList($user, $list);
     }
 
     // $this->authorize('attach', [Product::class, $list])
