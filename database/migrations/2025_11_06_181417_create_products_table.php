@@ -14,7 +14,8 @@ return new class extends Migration
                     ->constrained('categories', 'id_category')
                     ->cascadeOnDelete()
                     ->cascadeOnUpdate();
-            $table->string('name');                              // nombre del producto
+            $table->string('name');                             // nombre del producto
+            $table->string('attributes');                          // detalles del producto
             $table->boolean('completed')->default(false);         // marcado como completado
             $table->timestamps();                                // created_at / updated_at
         });

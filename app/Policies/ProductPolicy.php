@@ -2,52 +2,45 @@
 
 namespace App\Policies;
 
-use App\Models\{Product, ListModel, User};
+use App\Models\{User, ListModel};
 
 class ProductPolicy
 {
-    /**
-     * Crear un producto dentro de una lista (solo owner o editor).
-     */
+    private function canEditList(User $user, ListModel $list): bool
+    {
+        if ($user->id === $list->id_user) return true;
+
+        $role = $list->members()->where('id_user', $user->id)->value('role');
+        return $role === 'editor';
+    }
+
+    // $this->authorize('create', [Product::class, $list])
     public function create(User $user, ListModel $list): bool
     {
-        if ($user->id === $list->id_user) {
-            return true;
-        }
-
-        $pivot = $list->members()->where('id_user', $user->id)->first()?->pivot;
-        return $pivot && $pivot->role === 'editor';
+        return $this->canEditList($user, $list);
     }
 
-    /**
-     * Actualizar producto (nombre o categoría) → owner/editor.
-     */
-    public function update(User $user, Product $product, ListModel $list): bool
+    // $this->authorize('update', [Product::class, $list])
+    public function update(User $user, ListModel $list): bool
     {
-        return $this->create($user, $list);
+        return $this->canEditList($user, $list);
     }
 
-    /**
-     * Alternar estado de completado (toggle) → owner/editor.
-     */
-    public function toggle(User $user, Product $product, ListModel $list): bool
+    // $this->authorize('toggle', [Product::class, $list])
+    public function toggle(User $user, ListModel $list): bool
     {
-        return $this->create($user, $list);
+        return $this->canEditList($user, $list);
     }
 
-    /**
-     * Eliminar producto (detach o delete) → solo owner.
-     */
-    public function delete(User $user, Product $product, ListModel $list): bool
+    // $this->authorize('delete', [Product::class, $list])
+    public function delete(User $user, ListModel $list): bool
     {
-        return $user->id === $list->id_user;
+        return $user->id === $list->id_user; // solo owner borra
     }
 
-    /**
-     * Adjuntar producto existente a lista (owner/editor).
-     */
+    // $this->authorize('attach', [Product::class, $list])
     public function attach(User $user, ListModel $list): bool
     {
-        return $this->create($user, $list);
+        return $this->canEditList($user, $list);
     }
 }

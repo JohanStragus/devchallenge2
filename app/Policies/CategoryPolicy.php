@@ -2,49 +2,57 @@
 
 namespace App\Policies;
 
-use App\Models\{Category, ListModel, User};
+use App\Models\{User, ListModel, Category};
 
 class CategoryPolicy
 {
     /**
-     * Crear una categoría dentro de una lista (solo owner o editor).
+     * Owner o editor de la lista.
+     */
+    private function canEditList(User $user, ListModel $list): bool
+    {
+        if ($user->id === $list->id_user) return true;
+
+        $role = $list->members()
+            ->where('id_user', $user->id)
+            ->value('role');
+
+        return $role === 'editor';
+    }
+
+    /**
+     * Crear una categoría dentro de una lista.
+     * Usado por: $this->authorize('createInList', [Category::class, $list])
      */
     public function createInList(User $user, ListModel $list): bool
     {
-        if ($user->id === $list->id_user) {
-            return true;
-        }
-
-        $pivot = $list->members()->where('id_user', $user->id)->first()?->pivot;
-        return $pivot && $pivot->role === 'editor';
+        return $this->canEditList($user, $list);
     }
 
     /**
-     * Actualizar una categoría (solo owner o editor de la lista).
+     * Actualizar una categoría ligada a una lista.
+     * Usado por: $this->authorize('update', [$category, $list])
      */
     public function update(User $user, Category $category, ListModel $list): bool
     {
-        if ($user->id === $list->id_user) {
-            return true;
-        }
-
-        $pivot = $list->members()->where('id_user', $user->id)->first()?->pivot;
-        return $pivot && $pivot->role === 'editor';
+        return $this->canEditList($user, $list);
     }
 
     /**
-     * Adjuntar categoría existente a una lista (owner o editor).
+     * Adjuntar categoría existente a una lista.
+     * Usado por: $this->authorize('attachToList', [Category::class, $list])
      */
     public function attachToList(User $user, ListModel $list): bool
     {
-        return $this->createInList($user, $list);
+        return $this->canEditList($user, $list);
     }
 
     /**
-     * Quitar categoría de una lista (owner o editor).
+     * Quitar categoría de una lista.
+     * Usado por: $this->authorize('detachFromList', [Category::class, $list])
      */
     public function detachFromList(User $user, ListModel $list): bool
     {
-        return $this->createInList($user, $list);
+        return $this->canEditList($user, $list);
     }
 }

@@ -4,31 +4,41 @@ namespace App\Http\Controllers;
 
 use App\Models\{ListModel, User};
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class ListMemberController extends Controller
 {
     // POST /lists/{list}/members
-    // Invitar/añadir o actualizar rol (owner/editor)
+    // Invitar/añadir o actualizar rol (owner/editor) por email o user_id
     public function store(Request $request, ListModel $list)
     {
-        $this->authorize('manageMembers', $list); // solo el owner real
+        $this->authorize('manageMembers', $list); // solo owner
 
+        // email O user_id (uno de los dos es obligatorio)
         $data = $request->validate([
-            'user_id' => ['required', 'exists:users,id', 'different:auth_user'],
+            'email'   => ['nullable', 'email', 'exists:users,email', 'required_without:user_id'],
+            'user_id' => ['nullable', 'exists:users,id', 'required_without:email'],
             'role'    => ['required', 'in:owner,editor'],
         ], [], [
+            'email'   => 'correo',
             'user_id' => 'usuario',
             'role'    => 'rol',
         ]);
 
-        // Evita auto-asignarse vía validación preparada:
-        $request->merge(['auth_user' => Auth::id()]);
+        // Resolver usuario destino
+        $target = isset($data['email'])
+            ? User::where('email', $data['email'])->first()
+            : User::find($data['user_id']);
 
-        // No duplicar: añade o actualiza sin soltar vínculos previos
+        // Impedir auto-invitarse
+        if ($target->id === $request->user()->id) {
+            return response()->json(['message' => 'No puedes invitarte a ti mismo.'], 422);
+        }
+
+        // Añadir o actualizar rol en la pivot
         $list->members()->syncWithoutDetaching([
-            $data['user_id'] => ['role' => $data['role']],
+            $target->id => ['role' => $data['role']],
         ]);
+        $list->members()->updateExistingPivot($target->id, ['role' => $data['role']]);
 
         return response()->json(['ok' => true]);
     }
@@ -43,16 +53,13 @@ class ListMemberController extends Controller
             'role' => ['required', 'in:owner,editor'],
         ]);
 
-        // (Opcional) impedir que el owner se degrade si es el único owner de la lista
         if ($user->id === $list->id_user && $data['role'] !== 'owner') {
             return response()->json([
                 'message' => 'No puedes degradar al propietario principal de la lista.',
             ], 422);
         }
 
-        // Si el user no estaba en la pivot, lo adjuntamos con el rol
         $list->members()->syncWithoutDetaching([$user->id => ['role' => $data['role']]]);
-        // Si ya estaba, actualizamos su rol
         $list->members()->updateExistingPivot($user->id, ['role' => $data['role']]);
 
         return response()->json(['ok' => true]);
@@ -64,7 +71,6 @@ class ListMemberController extends Controller
     {
         $this->authorize('manageMembers', $list); // solo owner
 
-        // (Opcional) impedir que quiten al owner principal
         if ($user->id === $list->id_user) {
             return response()->json([
                 'message' => 'No puedes eliminar al propietario principal de la lista.',
