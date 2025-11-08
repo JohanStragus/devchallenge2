@@ -33,10 +33,20 @@ class CommentPolicy
     }
 
     /**
-     * Eliminar comentario → autor o dueño de la lista.
+     * Eliminar comentario → autor, owner pivot o dueño real.
      */
     public function delete(User $user, Comment $comment): bool
     {
-        return $this->update($user, $comment);
+        // autor
+        if ($user->id === $comment->id_user) return true;
+
+        $list = $comment->list;
+
+        // dueño real
+        if ($user->id === $list->id_user) return true;
+
+        // owner pivot, pero no puede borrar los del propietario real
+        $role = $list->members()->where('id_user', $user->id)->value('role');
+        return $role === 'owner' && $comment->id_user !== $list->id_user;
     }
 }
