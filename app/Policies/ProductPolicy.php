@@ -11,35 +11,29 @@ class ProductPolicy
         if ($user->id === $list->id_user) return true;
 
         $role = $list->members()->where('id_user', $user->id)->value('role');
-        return $role === 'editor';
+        return in_array($role, ['owner', 'editor']);
     }
 
-    // $this->authorize('create', [Product::class, $list])
     public function create(User $user, ListModel $list): bool
     {
         return $this->canEditList($user, $list);
     }
 
-    // $this->authorize('update', [Product::class, $list])
     public function update(User $user, ListModel $list): bool
     {
         return $this->canEditList($user, $list);
     }
 
-    // $this->authorize('toggle', [Product::class, $list])
     public function toggle(User $user, ListModel $list): bool
     {
         return $this->canEditList($user, $list);
     }
 
-    // $this->authorize('delete', [Product::class, $list])
     public function delete(User $user, ListModel $list): bool
     {
-        // Ahora: owner o editor (pueden quitar productos de la lista)
         return $this->canEditList($user, $list);
     }
 
-    // $this->authorize('attach', [Product::class, $list])
     public function attach(User $user, ListModel $list): bool
     {
         return $this->canEditList($user, $list);

@@ -21,7 +21,7 @@
 
   <p>Propietario: <strong>{{ $list->owner->name ?? '—' }}</strong></p>
 
-  {{-- COMPARTIR (solo owner) --}}
+  {{-- COMPARTIR / GESTIONAR MIEMBROS --}}
   @can('manageMembers', $list)
   <section>
     <h2>Compartir lista</h2>
@@ -29,7 +29,17 @@
     @if($list->members->count())
       <ul>
         @foreach($list->members as $m)
-          <li>{{ $m->name }} — <em>{{ $m->pivot->role }}</em></li>
+          <li>
+            {{ $m->name }} — <em>{{ $m->pivot->role }}</em>
+            @if($m->id === $list->id_user)
+              <small>(propietario)</small>
+            @else
+              <form class="member-del" action="/lists/{{ $list->id }}/members/{{ $m->id }}" method="post" style="display:inline">
+                @csrf @method('DELETE')
+                <button>Quitar</button>
+              </form>
+            @endif
+          </li>
         @endforeach
       </ul>
     @else
@@ -41,6 +51,7 @@
       <select id="inviteRole">
         <option value="editor">Editor</option>
         <option value="owner">Owner</option>
+        <option value="viewer">Viewer</option>
       </select>
       <button type="submit">Invitar</button>
     </form>
@@ -160,7 +171,7 @@ async function postJson(url, body){
   return res;
 }
 
-// Compartir por email
+// Invitar miembro
 const invite = document.getElementById('inviteForm');
 if(invite){
   invite.addEventListener('submit', async (e)=>{
@@ -172,6 +183,20 @@ if(invite){
     else { const j = await res.json().catch(()=>null); alert(j?.message || 'Error al invitar'); }
   });
 }
+
+// Quitar miembro
+document.querySelectorAll('form.member-del').forEach(f=>{
+  f.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    if(!confirm('¿Quitar este miembro de la lista?')) return;
+    const res = await fetch(f.action, {
+      method:'POST',
+      headers:{'X-CSRF-TOKEN':token,'Accept':'application/json'},
+      body: new URLSearchParams(new FormData(f))
+    });
+    if(res.ok) location.reload(); else alert('Error al quitar miembro');
+  });
+});
 
 // Crear categoría
 const catAdd = document.getElementById('cat-add');
