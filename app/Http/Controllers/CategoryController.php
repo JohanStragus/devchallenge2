@@ -50,4 +50,32 @@ class CategoryController extends Controller
 
         return response()->json($category);
     }
+
+    /**
+     * DELETE /lists/{list}/categories/{category}
+     * Desvincula la categoría de la lista (NO borra la categoría global)
+     */
+    public function destroy(ListModel $list, Category $category)
+    {
+        // 1. Autorizar (owner/editor)
+        $this->authorize('detachFromList', [Category::class, $list]);
+
+        // 2. Verificar que la categoría pertenece a la lista
+        if (!$list->categories->contains($category->id_category)) {
+            return response()->json(['error' => 'Categoría no pertenece a la lista'], 403);
+        }
+
+        // 3. Eliminar productos de esa categoría PERO SOLO los de esa lista
+        $category->products()->where('id_list', $list->id)->delete();
+
+        // 4. Quitar la categoría de la lista (desvincular)
+        $list->categories()->detach($category->id_category);
+
+        // 5. Si la categoría ya NO está en ninguna lista → borrarla totalmente
+        if ($category->lists()->count() === 0) {
+            $category->delete();
+        }
+
+        return response()->json(['ok' => true]);
+    }
 }

@@ -122,7 +122,8 @@ Route::middleware('auth')->delete('/lists/{list}', [ListController::class, 'dest
 */
 
 Route::middleware('auth')->post('/lists/{list}/categories',              [CategoryController::class, 'store']);
-Route::middleware('auth')->delete('/lists/{list}/categories/{category}', [CategoryController::class, 'destroy']);
+Route::middleware('auth')->delete('/lists/{list}/categories/{category:id_category}', [CategoryController::class, 'destroy']);
+
 
 
 
