@@ -11,257 +11,149 @@
 
     <style>
         :root {
-            --bg: #f5f7fb;
-            --card-bg: #ffffff;
-            --border-soft: #e2e5f0;
-            --border-strong: #cbd0e2;
-            --text-main: #111827;
-            --text-muted: #6b7280;
-            --accent: #4f46e5;
-            --accent-soft: rgba(79, 70, 229, 0.08);
-            --danger: #e11d48;
-            --radius-lg: 14px;
+            /* COLORES DE TU LANDING ROSA/MORADO */
+            --purple: #7b2cff;
+            --purple-dark: #3b0f72;
+            --pink: #ff4b8b;
+            --pink-dark: #c7337b;
+            --pink-light: #ff7ac5;
+
+            /* GENERALES */
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.75);
+            --card-bg: rgba(255, 255, 255, 0.15);
+            --card-border: rgba(255, 255, 255, 0.35);
+            --radius-lg: 18px;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
         }
 
         * {
             box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            /* página estática, sin scroll */
         }
 
         body {
-            margin: 0;
-            font-family: "Poppins", sans-serif;
-            background: var(--bg);
+            background: radial-gradient(circle at 20% 20%, var(--purple), var(--pink-dark), var(--purple-dark));
             color: var(--text-main);
+            overflow-x: hidden;
+            position: relative;
         }
 
-        a {
-            text-decoration: none;
-            color: inherit;
+        /* --------------------------------------------------------------
+           FORMAS ORGÁNICAS DEL FONDO (BLUR + DEGRADADOS)
+        -------------------------------------------------------------- */
+        .blob {
+            position: absolute;
+            width: 650px;
+            height: 450px;
+            filter: blur(80px);
+            opacity: 0.55;
+            border-radius: 50%;
+            z-index: -1;
         }
 
-        button {
-            font-family: inherit;
+        .blob.top-right {
+            background: var(--pink);
+            top: -120px;
+            right: -220px;
         }
 
-        /* Layout general */
-        .page {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+        .blob.bottom-left {
+            background: var(--purple-dark);
+            bottom: -160px;
+            left: -220px;
         }
 
-        /* Top bar */
+        /* --------------------------------------------------------------
+           TOPBAR (USUARIO)
+        -------------------------------------------------------------- */
         .topbar {
-            height: 56px;
             display: flex;
-            align-items: center;
             justify-content: flex-end;
-            padding: 0 24px;
+            padding: 10px 20px;
+            /* antes 16px 32px */
         }
 
-        .user-btn {
-            border-radius: 999px;
-            border: 1px solid var(--border-soft);
-            background: var(--card-bg);
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-muted);
+        .user-menu-wrapper {
+            position: relative;
         }
+
+        .user-menu-toggle {
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
+        }
+
 
         .user-avatar {
             width: 26px;
             height: 26px;
-            border-radius: 999px;
-            background: var(--accent-soft);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        /* Contenedor central */
-        .main {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            padding: 10px 16px 32px;
-        }
-
-        .center-panel {
-            width: 100%;
-            max-width: 800px;
-        }
-
-        /* Buscador estilo Google */
-        .search-wrapper {
-            margin-top: 18px;
-            margin-bottom: 16px;
-        }
-
-        .search-form {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--card-bg);
-            border-radius: 999px;
-            border: 1px solid var(--border-soft);
-            padding: 8px 14px;
-            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
-        }
-
-        .search-icon {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-        }
-
-        .search-input {
-            border: none;
-            flex: 1;
-            font-size: 0.95rem;
-            padding: 4px 0;
-            outline: none;
-            background: transparent;
-        }
-
-        .search-input::placeholder {
-            color: #9ca3af;
-        }
-
-        .btn-create {
-            border-radius: 999px;
-            border: none;
-            background: linear-gradient(90deg, #4f46e5, #6366f1);
-            color: #ffffff;
             font-size: 0.85rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.20);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        /* Dropdown topbar */
+        .user-dropdown {
+            position: absolute;
+            right: 0;
+            top: 46px;
+            background: rgba(255, 255, 255, 0.22);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            backdrop-filter: blur(14px);
+            padding: 8px 0;
+            min-width: 150px;
+            display: none;
+            box-shadow: var(--shadow);
+            z-index: 100;
+            min-width: 120px;
+            padding: 6px 0;
+        }
+
+        .user-dropdown.open {
+            display: block;
+        }
+
+        .dropdown-item {
+            background: none;
+            border: none;
+            padding: 10px 16px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            color: white;
             padding: 8px 12px;
-            cursor: pointer;
-            white-space: nowrap;
+            font-size: 0.80rem;
         }
 
-        .btn-create:hover {
-            filter: brightness(1.05);
+
+        .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.12);
         }
 
-        /* Lista de listas */
-        .lists-container {
-            background: var(--card-bg);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border-soft);
-            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
-            padding: 10px 0;
-        }
-
-        .lists-header {
-            padding: 4px 18px 10px;
-            border-bottom: 1px solid var(--border-soft);
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        .lists-list {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        .list-item {
-            padding: 10px 18px;
-            border-bottom: 1px solid var(--border-soft);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .list-item:last-child {
-            border-bottom: none;
-        }
-
-        .list-emoji {
-            font-size: 1.1rem;
-            width: 24px;
-            text-align: center;
-        }
-
-        .list-main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .list-name-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .list-name {
-            font-size: 0.96rem;
-            font-weight: 500;
-        }
-
-        .list-name a {
-            color: var(--text-main);
-        }
-
-        .list-name a:hover {
-            color: var(--accent);
-        }
-
-        .list-meta {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .list-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-link {
-            border: none;
-            background: none;
-            padding: 0;
-            font-size: 0.8rem;
-            color: var(--accent);
-            cursor: pointer;
-        }
-
-        .btn-link:hover {
-            text-decoration: underline;
-        }
-
-        .btn-danger {
-            border: none;
-            background: none;
-            padding: 0;
-            font-size: 0.78rem;
-            color: var(--danger);
-            cursor: pointer;
-        }
-
-        .btn-danger:hover {
-            text-decoration: underline;
-        }
-
-        .empty-state {
-            padding: 14px 18px;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        /* --- SIDEBAR MINI ESTILO BRAND APART --- */
+        /* --------------------------------------------------------------
+           MINI SIDEBAR GLASS (FLOTANTE)
+        -------------------------------------------------------------- */
         .side-mini {
             position: fixed;
             left: 18px;
-            top: 46%;
+            top: 45%;
             transform: translateY(-50%);
             display: flex;
             flex-direction: column;
@@ -270,211 +162,344 @@
         }
 
         .side-btn {
-            width: 54px;
-            height: 54px;
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e5e7eb;
+            position: relative;
+            width: 56px;
+            height: 56px;
+            background: rgba(255, 255, 255, 0.22);
+            border-radius: 18px;
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(16px);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.35rem;
             cursor: pointer;
-            transition: 0.15s ease;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: 0.2s ease;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
         }
 
         .side-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 14px rgba(219, 250, 20, 0.15);
+            background: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
         }
 
         .side-btn.active {
-            background: #f9ffa9ff;
-            border-color: #111827;
-            color: white;
-            box-shadow: 0 5px 14px rgba(0, 0, 0, 0.25);
+            background: linear-gradient(135deg, var(--pink-dark), var(--purple));
+            border: 1px solid rgba(255, 255, 255, 0.85);
         }
 
-        .user-btn-mini {
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
-
-        /* Iconos */
         .side-icon {
             width: 26px;
             height: 26px;
-            object-fit: contain;
-            opacity: 0.75;
-            transition: opacity .15s ease;
-        }
-
-        .side-btn:hover .side-icon {
-            opacity: 1;
+            filter: brightness(2);
         }
 
         /* Tooltip */
-        .side-btn {
-            position: relative;
-        }
-
         .tooltip {
             position: absolute;
-            left: 70px;
+            left: 80px;
             top: 50%;
             transform: translateY(-50%);
-            background: #272611ff;
+            background: rgba(0, 0, 0, 0.55);
             color: white;
             padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.78rem;
-            white-space: nowrap;
+            border-radius: 8px;
+            font-size: 0.8rem;
             opacity: 0;
             pointer-events: none;
-            transition: opacity .18s ease;
+            transition: 0.15s ease;
+            white-space: nowrap;
         }
 
         .side-btn:hover .tooltip {
             opacity: 1;
         }
 
-        .tooltip::after {
-            content: "";
-            position: absolute;
-            left: -6px;
-            top: 50%;
-            transform: translateY(-50%);
-            border-top: 6px solid transparent;
-            border-bottom: 6px solid transparent;
-            border-right: 6px solid #111827;
-        }
-
-        /* Menú usuario minimal */
-        .user-menu-wrapper {
-            position: relative;
-        }
-
-        .user-menu-toggle {
-            background: white;
-            border: 1px solid var(--border-soft);
-            border-radius: 999px;
-            padding: 6px 8px;
-            cursor: pointer;
-        }
-
-        .user-dropdown {
-            position: absolute;
-            right: 0;
-            top: 46px;
-            background: white;
-            border: 1px solid var(--border-soft);
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            display: none;
-            width: 150px;
-            z-index: 20;
-        }
-
-        .user-dropdown.open {
-            display: block;
-        }
-
-        .dropdown-item.logout {
-            width: 100%;
-            background: none;
-            border: none;
-            padding: 12px 16px;
-            text-align: left;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        .dropdown-item.logout:hover {
-            background: #f3f4f6;
-        }
-
-        /* Wrapper del usuario en el sidebar */
         .side-user-wrapper {
             position: relative;
         }
 
-        /* Dropdown lateral */
         .side-user-dropdown {
             position: absolute;
-            left: 70px;
+            left: 80px;
             top: 50%;
             transform: translateY(-50%);
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-            padding: 6px 0;
-            width: 150px;
+            background: rgba(255, 255, 255, 0.22);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            backdrop-filter: blur(12px);
+            box-shadow: var(--shadow);
+            padding: 8px 0;
             display: none;
-            z-index: 40;
+            width: 150px;
+            z-index: 200;
         }
 
         .side-user-dropdown.open {
             display: block;
         }
 
-        /* Botón de logout */
         .side-dropdown-item {
-            width: 100%;
             padding: 10px 14px;
-            border: none;
+            color: white;
             background: none;
-            cursor: pointer;
+            border: none;
             text-align: left;
+            width: 100%;
+            cursor: pointer;
             font-size: 0.9rem;
         }
 
         .side-dropdown-item:hover {
-            background: #f3f4f6;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* --------------------------------------------------------------
+           CONTENIDO CENTRAL
+        -------------------------------------------------------------- */
+        .main {
+            display: flex;
+            justify-content: center;
+            padding: 0 16px 24px;
+        }
+
+        .center-panel {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* BUSCADOR */
+        .search-form {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.20);
+            border: 1px solid var(--card-border);
+            padding: 14px 20px;
+            border-radius: 999px;
+            backdrop-filter: blur(14px);
+            margin-bottom: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            color: white;
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .btn-create {
+            padding: 8px 18px;
+            background: linear-gradient(90deg, var(--pink-light), var(--pink-dark));
+            border: none;
+            border-radius: 999px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-create:hover {
+            filter: brightness(1.1);
+        }
+
+        /* LISTAS (CARDS GLASS) */
+        .lists-container {
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(14px);
+            box-shadow: var(--shadow);
+            max-height: 455px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: none;
+        }
+
+        .lists-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .lists-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+            font-weight: 600;
+            color: white;
+        }
+
+        .lists-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.20);
+            color: white;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-emoji {
+            font-size: 1.4rem;
+        }
+
+        .list-main {
+            flex: 1;
+        }
+
+        .list-name-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .list-name a {
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .list-name a:hover {
+            color: var(--pink-light);
+        }
+
+        .list-meta {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.75);
+            margin-top: 2px;
+        }
+
+        .list-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon img.icon-action {
+            width: 22px;
+            height: 22px;
+            opacity: 0.9;
+            transition: 0.15s;
+        }
+
+        .btn-icon:hover img.icon-action {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            padding: 14px 20px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .go-home-btn {
+            margin-right: 14px;
+            padding: 8px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-weight: 400;
+            font-size: 0.78rem;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+        .go-home-btn:hover {
+            background: rgba(255, 255, 255, 0.30);
+            transform: translateY(-2px);
+        }
+
+        #datetime-box {
+            position: fixed;
+            bottom: 18px;
+            right: 24px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            backdrop-filter: blur(12px);
+            box-shadow: var(--shadow);
+            color: white;
+            font-size: 0.80rem;
+            line-height: 1.25;
+            z-index: 9999;
+            text-align: right;
+            pointer-events: none;
+            /* No molesta al hacer clic en nada */
         }
     </style>
 </head>
 
 <body>
-    <div class="page">
+    <!-- BLOBS DE FONDO -->
+    <div class="blob top-right"></div>
+    <div class="blob bottom-left"></div>
 
-        <!-- SIDEBAR MINI -->
+    <div class="page">
+        <!-- MINI SIDEBAR GLASS -->
         <aside class="side-mini">
             <a class="side-btn active" data-filter="all">
-                <img src="/img/list_all.png" class="side-icon">
+                <img src="/img/list_all.png" class="side-icon" alt="Todas las listas">
                 <span class="tooltip">Todas las listas</span>
             </a>
 
             <a class="side-btn" data-filter="owned">
-                <img src="/img/my_list.png" class="side-icon">
+                <img src="/img/my_list.png" class="side-icon" alt="Listas propias">
                 <span class="tooltip">Listas propias</span>
             </a>
 
             <a class="side-btn" data-filter="shared">
-                <img src="/img/list_shared.png" class="side-icon">
+                <img src="/img/list_shared.png" class="side-icon" alt="Listas compartidas">
                 <span class="tooltip">Listas compartidas</span>
             </a>
 
             <div class="side-user-wrapper">
                 <a class="side-btn side-user-btn">
-                    <img src="/img/account.png" class="side-icon">
+                    <img src="/img/account.png" class="side-icon" alt="Cuenta">
                     <span class="tooltip">Cuenta</span>
                 </a>
 
                 <div class="side-user-dropdown" id="sidebarUserDropdown">
                     <form method="POST" action="/logout">
                         @csrf
-                        <button class="side-dropdown-item">Cerrar sesión</button>
+                        <button class="side-dropdown-item" type="submit">Cerrar sesión</button>
                     </form>
                 </div>
             </div>
-
         </aside>
 
-
-        <!-- Barra superior -->
+        <!-- TOPBAR: USUARIO -->
         <header class="topbar">
+            <a href="{{ url('/') }}" class="go-home-btn">Landing Page</a>
             <div class="user-menu-wrapper">
                 <button class="user-menu-toggle" type="button">
                     <div class="user-avatar">
@@ -485,26 +510,23 @@
                 <div class="user-dropdown" id="userDropdown">
                     <form method="POST" action="/logout">
                         @csrf
-                        <button class="dropdown-item logout">Cerrar sesión</button>
+                        <button class="dropdown-item" type="submit">Cerrar sesión</button>
                     </form>
                 </div>
             </div>
         </header>
 
-        <!-- Contenido central -->
+        <!-- CONTENIDO CENTRAL -->
         <main class="main">
             <div class="center-panel">
+                <!-- BUSCADOR -->
+                <form class="search-form" id="searchForm">
+                    <input id="searchInput" class="search-input" type="text"
+                        placeholder="Busca una lista por nombre..." autocomplete="off">
+                    <button type="submit" class="btn-create">Crear lista</button>
+                </form>
 
-                <!-- Buscador + crear -->
-                <section class="search-wrapper">
-                    <form class="search-form" id="searchForm">
-                        <span class="search-icon">🔍</span>
-                        <input id="searchInput" type="text" class="search-input" placeholder="Busca una lista por nombre..." autocomplete="off">
-                        <button type="submit" class="btn-create">Crear lista</button>
-                    </form>
-                </section>
-
-                <!-- Listas -->
+                <!-- LISTAS (CARDS GLASS) -->
                 <section class="lists-container">
                     <div class="lists-header">
                         Listas propias y compartidas
@@ -524,91 +546,103 @@
                         @endphp
 
                         @forelse ($allLists as $l)
-                        <li class="list-item" data-name="{{ Str::lower($l->name) }}" data-type="{{ $l->is_shared ? 'shared' : 'owned' }}">
+                        <li class="list-item"
+                            data-name="{{ Str::lower($l->name) }}"
+                            data-type="{{ $l->is_shared ? 'shared' : 'owned' }}">
+
                             <div class="list-emoji">
                                 {{ $l->is_shared ? '🤝' : '📝' }}
                             </div>
+
                             <div class="list-main">
                                 <div class="list-name-row">
                                     <div class="list-name">
                                         <a href="{{ route('lists.show', $l) }}">{{ $l->name }}</a>
                                     </div>
+
                                     <div class="list-actions">
-                                        <a href="{{ route('lists.show', $l) }}" class="btn-link">Abrir</a>
+                                        <a href="{{ route('lists.show', $l) }}" class="btn-icon" title="Abrir lista">
+                                            <img src="/img/open_list.png" class="icon-action" alt="Abrir">
+                                        </a>
 
                                         @if(!$l->is_shared)
                                         <form class="delete-list-form" action="/lists/{{ $l->id }}" method="post">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn-danger">Eliminar</button>
+                                            <button type="submit" class="btn-icon" title="Eliminar lista">
+                                                <img src="/img/delete_list.png" class="icon-action" alt="Eliminar">
+                                            </button>
                                         </form>
                                         @endif
                                     </div>
                                 </div>
+
                                 <div class="list-meta">
                                     {{ $l->is_shared ? 'Compartida' : 'Propia' }}
                                     @if ($l->is_shared && isset($l->owner))
-                                    • Propietario: {{ $l->owner->name ?? '—' }}
+                                    • Propietario: {{ $l->owner->name }}
                                     @endif
                                 </div>
                             </div>
                         </li>
                         @empty
-                        <li class="empty-state">No tienes listas todavía. Crea una nueva con el botón de arriba.</li>
+                        <li class="empty-state">
+                            No tienes listas todavía. Crea una nueva con el botón de arriba.
+                        </li>
                         @endforelse
                     </ul>
                 </section>
-
             </div>
         </main>
     </div>
+    <!-- FECHA + LOCALIZACIÓN (FIJO ABAJO DERECHA) -->
+    <aside id="datetime-box">
+        <div id="date-line"></div>
+        <div id="location-line"></div>
+    </aside>
 
     <script>
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-        // ---- Filtro + búsqueda ----
-        const listItems = Array.from(document.querySelectorAll('.list-item'));
+        /* -----------------------------
+        BUSCADOR + FILTROS
+        ----------------------------- */
+        const listItems = [...document.querySelectorAll('.list-item')];
         const searchInput = document.getElementById('searchInput');
         let activeFilter = "all";
 
         function applyFilters() {
-            const query = searchInput.value.trim().toLowerCase();
+            const query = (searchInput.value || "").trim().toLowerCase();
 
             listItems.forEach(li => {
-                const name = li.dataset.name || '';
-                const type = li.dataset.type || 'owned';
+                const name = li.dataset.name || "";
+                const type = li.dataset.type || "owned";
 
                 const matchesName = name.includes(query);
                 const matchesType = (activeFilter === 'all') || (type === activeFilter);
 
-                li.style.display = (matchesName && matchesType) ? 'flex' : 'none';
+                li.style.display = matchesName && matchesType ? "flex" : "none";
             });
         }
 
-        searchInput.addEventListener('input', applyFilters);
+        searchInput.addEventListener("input", applyFilters);
 
-        // Botones del sidebar
-        const sideBtns = document.querySelectorAll('.side-btn[data-filter]');
-        sideBtns.forEach(btn => {
+        document.querySelectorAll('.side-btn[data-filter]').forEach(btn => {
             btn.addEventListener('click', () => {
-                sideBtns.forEach(b => b.classList.remove('active'));
-
+                document.querySelectorAll('.side-btn[data-filter]').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 activeFilter = btn.dataset.filter;
-
                 applyFilters();
             });
         });
 
-        // Crear lista
-        const searchForm = document.getElementById('searchForm');
-        searchForm.addEventListener('submit', async (e) => {
+        /* -----------------------------
+        CREAR LISTA
+        ----------------------------- */
+        document.getElementById('searchForm').addEventListener('submit', async e => {
             e.preventDefault();
-            const name = searchInput.value.trim();
-            if (!name) {
-                alert('Escribe un nombre para la nueva lista.');
-                return;
-            }
+            const name = (searchInput.value || "").trim();
+            if (!name) return alert("Escribe un nombre para la nueva lista.");
 
             const res = await fetch('/lists', {
                 method: 'POST',
@@ -625,21 +659,23 @@
             if (res.ok) {
                 location.reload();
             } else {
-                alert('Error creando la lista');
+                alert("Error creando la lista.");
             }
         });
 
-        // Eliminar listas propias
+        /* -----------------------------
+        BORRAR LISTA
+        ----------------------------- */
         document.querySelectorAll('.delete-list-form').forEach(form => {
-            form.addEventListener('submit', async (e) => {
+            form.addEventListener('submit', async e => {
                 e.preventDefault();
-                if (!confirm('¿Eliminar esta lista?')) return;
+                if (!confirm("¿Eliminar esta lista?")) return;
 
                 const res = await fetch(form.action, {
-                    method: 'POST',
+                    method: "POST",
                     headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json',
+                        "X-CSRF-TOKEN": csrfToken,
+                        "Accept": "application/json",
                     },
                     body: new URLSearchParams(new FormData(form))
                 });
@@ -647,12 +683,14 @@
                 if (res.ok) {
                     location.reload();
                 } else {
-                    alert('Error eliminando la lista');
+                    alert("Error eliminando la lista.");
                 }
             });
         });
 
-        // Dropdown del usuario (solo logout)
+        /* -----------------------------
+        DROPDOWN USUARIO (TOPBAR)
+        ----------------------------- */
         const userToggle = document.querySelector('.user-menu-toggle');
         const userDropdown = document.getElementById('userDropdown');
 
@@ -660,29 +698,46 @@
             userDropdown.classList.toggle('open');
         });
 
-        // cerrar al click fuera
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', e => {
             if (!e.target.closest('.user-menu-wrapper')) {
                 userDropdown.classList.remove('open');
             }
         });
-        // Dropdown del sidebar (logout)
+
+        /* -----------------------------
+        DROPDOWN USUARIO (SIDEBAR)
+        ----------------------------- */
         const sideUserBtn = document.querySelector('.side-user-btn');
         const sideUserDropdown = document.getElementById('sidebarUserDropdown');
 
-        sideUserBtn.addEventListener('click', (e) => {
+        sideUserBtn.addEventListener('click', e => {
             e.preventDefault();
             sideUserDropdown.classList.toggle('open');
         });
 
-        // cerrar al click fuera
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', e => {
             if (!e.target.closest('.side-user-wrapper')) {
                 sideUserDropdown.classList.remove('open');
             }
         });
-    </script>
 
+        /* -----------------------------
+        FECHA + LOCALIDAD DISPOSITIVO
+        ----------------------------- */
+        (function() {
+            const dateLine = document.getElementById('date-line');
+
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, "0");
+            const month = String(now.getMonth() + 1).padStart(2, "0");
+            const year = now.getFullYear();
+
+            const opts = Intl.DateTimeFormat().resolvedOptions();
+            const timeZone = opts.timeZone;
+
+            dateLine.textContent = `${day}/${month}/${year} · ${timeZone}`;
+        })();
+    </script>
 </body>
 
 </html>
