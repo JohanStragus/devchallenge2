@@ -29,62 +29,54 @@
             transition: 0.25s ease;
         }
 
-        /* Placeholder */
         input::placeholder {
             color: rgba(255, 255, 255, 0.55) !important;
         }
 
-        /* Focus state */
         input:focus {
             outline: none !important;
             border: 1px solid rgba(230, 198, 209, 1) !important;
             box-shadow: 0 0 12px rgba(253, 251, 252, 0.55) !important;
         }
 
-        /* ---------- Autofill Fix ---------- */
+        /* ---------- Autofill fix completo ---------- */
         input:-webkit-autofill,
-        input:-webkit-autofill:hover,
         input:-webkit-autofill:focus,
-        input:-webkit-autofill:active {
+        input:-webkit-autofill:hover {
             -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.05) inset !important;
+            box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.05) inset !important;
             -webkit-text-fill-color: #ffffff !important;
             caret-color: #ffffff !important;
-            border: 1px solid rgba(254, 254, 254, 0.87) !important;
-            transition: background-color 5000s ease-in-out 0s !important;
+            border: 1px solid rgba(230, 198, 209, 1) !important;
+            transition: background-color 9999s ease-in-out 0s !important;
         }
 
-        /* ---------- Labels ---------- */
+        /* Labels */
         label {
             color: white !important;
             font-size: 0.9rem;
         }
 
-        /* ---------- Checkbox: estilo premium ✓ rosa ---------- */
+        /* Checkbox */
         input[type="checkbox"] {
             appearance: none;
-            -webkit-appearance: none;
-            background-color: rgba(255, 255, 255, 0.18) !important;
-            border: 2px solid rgba(255, 255, 255, 0.7) !important;
+            background-color: rgba(255, 255, 255, 0.18);
+            border: 2px solid rgba(255, 255, 255, 0.7);
             width: 18px;
             height: 18px;
             border-radius: 4px;
             cursor: pointer;
-            position: relative;
-            transition: 0.2s;
         }
 
         input[type="checkbox"]:checked {
-            background-color: transparent !important;
-            border-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: white !important;
         }
 
-        /* Texto "Remember me" */
         .text-gray-600,
         .dark\:text-gray-400 {
             color: white !important;
         }
 
-        /* Forgot password link */
         .underline {
             color: rgba(255, 255, 255, 0.85) !important;
         }
@@ -141,7 +133,32 @@
                 color: white;
                 box-shadow: 0 8px 40px rgba(0,0,0,0.25);
             ">
+
+            <!-- FORMULARIO LOGIN / REGISTER -->
             {{ $slot }}
+
+            <!-- BOTÓN LOGIN GOOGLE -->
+            <div class="mt-4 text-center">
+                <a href="{{ route('google.login') }}"
+                    style="
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        gap:10px;
+                        background:white;
+                        color:#444;
+                        padding:10px 16px;
+                        border-radius:10px;
+                        font-weight:600;
+                        transition:0.2s;
+                "
+                    onmouseover="this.style.opacity='0.85'"
+                    onmouseout="this.style.opacity='1'">
+                    <img src="/img/google_icon.png" alt="Google" style="width:20px; height:20px;">
+                    <span>Continuar con Google</span>
+                </a>
+            </div>
+
         </div>
 
     </div>

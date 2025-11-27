@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 
+use Laravel\Socialite\Facades\Socialite; // ← Google SSO
+
 use App\Http\Controllers\{
     ProfileController,
     ListController,
@@ -16,6 +18,7 @@ use App\Http\Controllers\{
 use App\Models\ListModel;
 
 
+
 /*
 |--------------------------------------------------------------------------
 | RUTAS PÚBLICAS
@@ -26,6 +29,37 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+/*
+|--------------------------------------------------------------------------
+| LOGIN CON GOOGLE (SSO)
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/google/redirect', function () {
+    return Socialite::driver('google')->redirect();
+})->name('google.login');
+
+Route::get('/google/callback', function () {
+
+    /** @var \Laravel\Socialite\Two\GoogleProvider $driver */
+    $driver = Socialite::driver('google');
+    $googleUser = $driver->stateless()->user();
+
+
+    // Crear o actualizar usuario según email
+    $user = \App\Models\User::updateOrCreate(
+        ['email' => $googleUser->email],
+        [
+            'name'     => $googleUser->name,
+            'password' => null, // usuarios Google no necesitan pass
+        ]
+    );
+
+    Auth::login($user, true);
+
+    return redirect()->route('dashboard');
+});
 
 
 /*
@@ -42,9 +76,8 @@ Route::middleware(['auth', 'verified'])->get('/dashboard', function () {
 
     return view('dashboard', [
         'owned'  => $u->lists,
-        'shared' => $u->sharedLists, 
+        'shared' => $u->sharedLists,
     ]);
-
 })->name('dashboard');
 
 
@@ -58,7 +91,7 @@ Route::middleware(['auth', 'verified'])->get('/dashboard', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/profile',   [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile',[ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 
@@ -84,7 +117,6 @@ Route::middleware('auth')->get('/lists/{list}', function (ListModel $list) {
     ]);
 
     return view('lists.show', compact('list'));
-
 })->name('lists.show');
 
 
@@ -93,7 +125,6 @@ Route::middleware('auth')->get('/lists/{list}', function (ListModel $list) {
 |--------------------------------------------------------------------------
 | REDIRECCIÓN /lists → /dashboard
 | - Evita error 405 al hacer GET /lists
-| - Ahora /lists ya no tiene vista propia
 |--------------------------------------------------------------------------
 */
 
@@ -123,7 +154,6 @@ Route::middleware('auth')->delete('/lists/{list}', [ListController::class, 'dest
 
 Route::middleware('auth')->post('/lists/{list}/categories',              [CategoryController::class, 'store']);
 Route::middleware('auth')->delete('/lists/{list}/categories/{category:id_category}', [CategoryController::class, 'destroy']);
-
 
 
 
@@ -168,4 +198,4 @@ Route::middleware('auth')->delete('/lists/{list}/members/{user}', [ListMemberCon
 |--------------------------------------------------------------------------
 */
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
