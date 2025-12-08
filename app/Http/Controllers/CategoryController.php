@@ -65,8 +65,8 @@ class CategoryController extends Controller
             return response()->json(['error' => 'Categoría no pertenece a la lista'], 403);
         }
 
-        // 3. Eliminar productos de esa categoría PERO SOLO los de esa lista
-        $category->products()->where('id_list', $list->id)->delete();
+        // 3. Eliminar productos de esa categoría
+        $category->products()->delete();
 
         // 4. Quitar la categoría de la lista (desvincular)
         $list->categories()->detach($category->id_category);
