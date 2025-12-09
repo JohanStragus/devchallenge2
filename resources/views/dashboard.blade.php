@@ -11,7 +11,7 @@
 
     <style>
         :root {
-            /* COLORES DE TU LANDING ROSA/MORADO */
+            /* COLORES LANDING ROSA/MORADO */
             --purple: #7b2cff;
             --purple-dark: #3b0f72;
             --pink: #ff4b8b;
@@ -454,7 +454,6 @@
             z-index: 9999;
             text-align: right;
             pointer-events: none;
-            /* No molesta al hacer clic en nada */
         }
     </style>
 </head>

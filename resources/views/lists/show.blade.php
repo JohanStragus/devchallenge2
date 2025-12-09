@@ -582,6 +582,7 @@
 </head>
 
 <body>
+    <!-- DECORACIÓN FONDO ORGÁNICO -->
     <div class="bg-shape one"></div>
     <div class="bg-shape two"></div>
 
@@ -593,6 +594,7 @@
 
     <div class="page-wrapper">
 
+        <!-- Zona izquierda (volver + título) -->
         {{-- TOP BAR --}}
         <div class="top-bar">
             <div class="top-left">
@@ -609,30 +611,37 @@
                 </div>
             </div>
 
+            <!-- Zona derecha (avatares + botón editar) -->
             <div class="top-right">
                 {{-- Avatares rápidos (propietario + algunos miembros) --}}
                 <div class="member-avatars">
+
                     @php
-                    $allAvatars = collect([$list->owner])->filter();
-                    if (isset($list->members)) {
-                    $allAvatars = $allAvatars->merge($list->members)->unique('id');
-                    }
-                    $shown = 0;
+                        // Reunir propietario + miembros
+                        $allAvatars = collect([$list->owner])->filter();
+                        if (isset($list->members)) {
+                            $allAvatars = $allAvatars->merge($list->members)->unique('id');
+                        }
+                        $shown = 0;
                     @endphp
 
+                    {{-- Mostrar solo 4 primeros --}}
                     @foreach($allAvatars as $u)
-                    @if($shown < 4)
-                        <div class="avatar-circle">
-                        {{ strtoupper(mb_substr($u->name ?? 'U', 0, 2)) }}
-                </div>
-                @php $shown++; @endphp
-                @endif
-                @endforeach
-                @if(($allAvatars->count() ?? 0) > $shown)
-                <div class="avatar-circle">+{{ $allAvatars->count() - $shown }}</div>
-                @endif
-            </div>
+                        @if($shown < 4)
+                            <div class="avatar-circle">
+                                {{ strtoupper(mb_substr($u->name ?? 'U', 0, 2)) }}
+                            </div>
+                            @php $shown++; @endphp
+                        @endif
+                    @endforeach
 
+                {{-- Mostrar +N si hay más --}}
+                    @if(($allAvatars->count() ?? 0) > $shown)
+                        <div class="avatar-circle">+{{ $allAvatars->count() - $shown }}</div>
+                    @endif
+            </div>
+            
+            {{-- Botón editar (solo si puede) --}}
             @can('update', $list)
             <button id="editListBtn" class="edit-list-btn">
                 <span>Editar nombre</span>
@@ -904,8 +913,12 @@
     </div>
 
     <script>
+        // ============================================
+        // CSRF token y helper para POST JSON
+        // ============================================
         const token = document.querySelector('meta[name="csrf-token"]').content;
 
+        // Enviar peticiones POST JSON más fácilmente
         async function postJson(url, body) {
             const res = await fetch(url, {
                 method: 'POST',
@@ -919,27 +932,32 @@
             return res;
         }
 
-        // ---------------------------
-        //   EDITAR NOMBRE LISTA
-        // ---------------------------
+
+        // ======================================================
+        // 1) EDITAR NOMBRE DE LA LISTA
+        // ======================================================
         const editBtn = document.getElementById('editListBtn');
+
         if (editBtn) {
             const form = document.getElementById('editListForm');
             const input = document.getElementById('editListInput');
             const cancel = document.getElementById('cancelEdit');
             const title = document.getElementById('listName');
 
+            // Mostrar formulario
             editBtn.addEventListener('click', () => {
                 editBtn.style.display = 'none';
                 form.style.display = 'flex';
                 input.focus();
             });
 
+            // Cancelar edición
             cancel.addEventListener('click', () => {
                 form.style.display = 'none';
                 editBtn.style.display = 'inline-flex';
             });
 
+            // Guardar nuevo nombre
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const name = input.value.trim();
@@ -967,21 +985,26 @@
             });
         }
 
-        // ---------------------------
-        //   INVITAR MIEMBRO
-        // ---------------------------
+
+        // ======================================================
+        // 2) INVITAR MIEMBRO
+        // ======================================================
         const invite = document.getElementById('inviteForm');
+
         if (invite) {
             invite.addEventListener('submit', async (e) => {
                 e.preventDefault();
+
                 const email = document.getElementById('inviteEmail').value.trim();
                 const role = document.getElementById('inviteRole').value;
+
                 if (!email || !role) return;
 
                 const res = await postJson('/lists/{{ $list->id }}/members', {
                     email,
                     role
                 });
+
                 if (res.ok) {
                     location.reload();
                 } else {
@@ -996,6 +1019,7 @@
             f.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (!confirm('¿Quitar este miembro de la lista?')) return;
+
                 const res = await fetch(f.action, {
                     method: 'POST',
                     headers: {
@@ -1004,23 +1028,28 @@
                     },
                     body: new URLSearchParams(new FormData(f))
                 });
+
                 if (res.ok) location.reload();
                 else alert('Error al quitar miembro');
             });
         });
 
-        // ---------------------------
-        //   CREAR CATEGORÍA
-        // ---------------------------
+
+        // ======================================================
+        // 3) CREAR CATEGORÍA
+        // ======================================================
         const catAdd = document.getElementById('cat-add');
+
         if (catAdd) {
             catAdd.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const name = document.getElementById('catName').value.trim();
                 if (!name) return;
+
                 const res = await postJson(`/lists/{{ $list->id }}/categories`, {
                     name
                 });
+
                 if (res.ok) location.reload();
                 else alert('Error creando categoría');
             });
@@ -1031,6 +1060,7 @@
             f.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (!confirm('¿Quitar esta categoría de la lista?')) return;
+
                 const res = await fetch(f.action, {
                     method: 'POST',
                     headers: {
@@ -1039,17 +1069,20 @@
                     },
                     body: new URLSearchParams(new FormData(f))
                 });
+
                 if (res.ok) location.reload();
                 else alert('Error quitando categoría');
             });
         });
 
-        // ---------------------------
-        //   CREAR PRODUCTO (POR COLUMNA)
-        // ---------------------------
+
+        // ======================================================
+        // 4) CREAR PRODUCTO EN UNA COLUMNA
+        // ======================================================
         document.querySelectorAll('form.prod-add').forEach(form => {
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
+
                 const formData = new FormData(form);
                 const name = (formData.get('name') || '').toString().trim();
                 const id_category = (formData.get('id_category') || '').toString();
@@ -1061,20 +1094,20 @@
                     name,
                     details
                 };
-                if (id_category !== '') {
-                    body.id_category = id_category;
-                }
+                if (id_category !== '') body.id_category = id_category;
 
                 const res = await postJson(`/lists/{{ $list->id }}/products`, body);
+
                 if (res.ok) location.reload();
                 else alert('Error creando producto');
             });
         });
 
-        // Toggle producto
+        // Toggle producto (completar/desmarcar)
         document.querySelectorAll('form.prod-toggle').forEach(f => {
             f.addEventListener('submit', async (e) => {
                 e.preventDefault();
+
                 const res = await fetch(f.action, {
                     method: 'POST',
                     headers: {
@@ -1083,6 +1116,7 @@
                     },
                     body: new URLSearchParams(new FormData(f))
                 });
+
                 if (res.ok) location.reload();
                 else alert('Error haciendo toggle');
             });
@@ -1093,6 +1127,7 @@
             f.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (!confirm('¿Quitar este producto?')) return;
+
                 const res = await fetch(f.action, {
                     method: 'POST',
                     headers: {
@@ -1101,32 +1136,40 @@
                     },
                     body: new URLSearchParams(new FormData(f))
                 });
+
                 if (res.ok) location.reload();
                 else alert('Error quitando producto');
             });
         });
 
-        // ---------------------------
-        //   COMENTARIOS
-        // ---------------------------
+
+        // ======================================================
+        // 5) COMENTARIOS
+        // ======================================================
         const cAdd = document.getElementById('c-add');
+
         if (cAdd) {
             cAdd.addEventListener('submit', async (e) => {
                 e.preventDefault();
+
                 const content = document.getElementById('cText').value.trim();
                 if (!content) return;
+
                 const res = await postJson(`/lists/{{ $list->id }}/comments`, {
                     content
                 });
+
                 if (res.ok) location.reload();
                 else alert('Error creando comentario');
             });
         }
 
+        // Eliminar comentario
         document.querySelectorAll('form.c-del').forEach(f => {
             f.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (!confirm('¿Eliminar este comentario?')) return;
+
                 const res = await fetch(f.action, {
                     method: 'POST',
                     headers: {
@@ -1135,11 +1178,13 @@
                     },
                     body: new URLSearchParams(new FormData(f))
                 });
+
                 if (res.ok) location.reload();
                 else alert('Error borrando comentario');
             });
         });
     </script>
+
 </body>
 
 </html>
