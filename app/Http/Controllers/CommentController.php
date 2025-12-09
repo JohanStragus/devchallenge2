@@ -9,15 +9,12 @@ use Illuminate\Support\Facades\Auth;
 class CommentController extends Controller
 {
     /**
-     * (Opcional) GET /lists/{list}/comments
+     * GET /lists/{list}/comments
      * Lista los comentarios de una lista (solo miembros/owner pueden verlos).
      */
     public function index(ListModel $list)
     {
         $this->authorize('view', [Comment::class, $list]);
-
-        // Si quieres incluir usuario autor:
-        // return response()->json($list->comments()->with('user:id,name,email')->latest()->get());
 
         return response()->json($list->comments()->latest()->get());
     }
@@ -25,7 +22,6 @@ class CommentController extends Controller
     /**
      * POST /lists/{list}/comments
      * Crea un comentario en la lista.
-     * Body: { content: string }
      */
     public function store(Request $request, ListModel $list)
     {
@@ -41,16 +37,12 @@ class CommentController extends Controller
             'content' => $data['content'],
         ]);
 
-        // Si quieres devolver con el autor:
-        // $comment->load('user:id,name,email');
-
         return response()->json($comment, 201);
     }
 
     /**
      * PUT /comments/{comment}
      * Edita el comentario (autor u owner de la lista).
-     * Body: { content: string }
      */
     public function update(Request $request, Comment $comment)
     {

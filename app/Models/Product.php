@@ -15,10 +15,6 @@ class Product extends Model
     // Clave primaria personalizada
     protected $primaryKey = 'id_product';
 
-    // (Opcional) si la PK no es incrementing tipo int, ajusta esto; en tu caso está ok:
-    // public $incrementing = true;
-    // protected $keyType = 'int';
-
     // Campos asignables
     protected $fillable = [
         'id_category',

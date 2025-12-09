@@ -34,8 +34,7 @@ class ListProductController extends Controller
     }
 
     /**
-     * (Opcional) POST /lists/{list}/products/attach-bulk
-     * Body: { ids: [id_product, ...] }
+     * POST /lists/{list}/products/attach-bulk
      * Adjunta varios productos a la vez.
      */
     public function attachBulk(Request $request, ListModel $list)

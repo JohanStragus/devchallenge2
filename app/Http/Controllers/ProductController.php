@@ -10,7 +10,6 @@ class ProductController extends Controller
     /**
      * POST /lists/{list}/products
      * Crea un producto y lo asocia a una lista.
-     * Body: { name: string, id_category: int }
      */
     public function store(Request $request, ListModel $list)
     {
@@ -51,7 +50,6 @@ class ProductController extends Controller
     /**
      * PUT /lists/{list}/products/{product}
      * Edita el nombre o categoría del producto.
-     * Body: { name?: string, id_category?: int }
      */
     public function update(Request $request, ListModel $list, Product $product)
     {

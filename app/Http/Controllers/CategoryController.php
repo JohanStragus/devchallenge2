@@ -10,7 +10,6 @@ class CategoryController extends Controller
     /**
      * POST /lists/{list}/categories
      * Crea una CATEGORÍA y la adjunta a la LISTA.
-     * Body: { name: string }
      */
     public function store(Request $request, ListModel $list)
     {
@@ -21,9 +20,7 @@ class CategoryController extends Controller
             'name' => ['required', 'string', 'max:255'],
         ]);
 
-        // Si quieres reutilizar por nombre globalmente, descomenta:
-        // $category = Category::firstOrCreate(['name' => $data['name']]);
-
+        // Crear o usar una categoría con el mismo nombre
         $category = Category::firstOrCreate(['name' => $data['name']]);
 
         // Adjuntar a la lista sin duplicar
@@ -35,7 +32,6 @@ class CategoryController extends Controller
     /**
      * PUT /lists/{list}/categories/{category}
      * Renombra la CATEGORÍA (requiere pertenecer a la LISTA).
-     * Body: { name: string }
      */
     public function update(Request $request, ListModel $list, Category $category)
     {

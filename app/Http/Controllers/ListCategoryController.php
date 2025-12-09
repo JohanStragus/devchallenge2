@@ -10,7 +10,6 @@ class ListCategoryController extends Controller
     /**
      * POST /lists/{list}/categories/attach
      * Adjunta una categoría EXISTENTE a la lista (sin duplicar).
-     * Body: { id_category: int }
      */
     public function attach(Request $request, ListModel $list)
     {
