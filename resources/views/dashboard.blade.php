@@ -455,6 +455,269 @@
             text-align: right;
             pointer-events: none;
         }
+
+        /* ========== RESPONSIVE ========== */
+        
+        /* Tablets */
+        @media (max-width: 900px) {
+            .side-mini {
+                left: 12px;
+            }
+
+            .side-btn {
+                width: 48px;
+                height: 48px;
+                border-radius: 14px;
+            }
+
+            .side-icon {
+                width: 22px;
+                height: 22px;
+            }
+
+            .main {
+                padding: 0 12px 20px;
+            }
+
+            .search-form {
+                padding: 12px 16px;
+            }
+
+            .lists-container {
+                max-height: 400px;
+            }
+        }
+
+        /* Móviles */
+        @media (max-width: 600px) {
+            /* Sidebar pasa a bottom bar */
+            .side-mini {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                top: auto;
+                transform: none;
+                flex-direction: row;
+                justify-content: center;
+                gap: 12px;
+                padding: 10px 16px;
+                background: rgba(0, 0, 0, 0.25);
+                backdrop-filter: blur(16px);
+                border-top: 1px solid var(--card-border);
+                z-index: 100;
+            }
+
+            .side-btn {
+                width: 44px;
+                height: 44px;
+                border-radius: 12px;
+            }
+
+            .side-icon {
+                width: 20px;
+                height: 20px;
+            }
+
+            .tooltip {
+                display: none;
+            }
+
+            .side-user-dropdown {
+                left: auto;
+                right: 0;
+                top: auto;
+                bottom: 60px;
+                transform: none;
+            }
+
+            /* Topbar */
+            .topbar {
+                padding: 8px 12px;
+                margin-bottom: 16px;
+            }
+
+            .go-home-btn {
+                margin-right: 8px;
+                padding: 6px 10px;
+                font-size: 0.7rem;
+            }
+
+            .user-avatar {
+                width: 24px;
+                height: 24px;
+                font-size: 0.75rem;
+            }
+
+            /* Contenido principal */
+            .main {
+                padding: 0 10px 80px; /* espacio para bottom bar */
+            }
+
+            .center-panel {
+                max-width: 100%;
+            }
+
+            .search-form {
+                padding: 10px 14px;
+                gap: 8px;
+                margin-bottom: 14px;
+            }
+
+            .search-input {
+                font-size: 0.9rem;
+            }
+
+            .btn-create {
+                padding: 6px 14px;
+                font-size: 0.8rem;
+            }
+
+            /* Listas */
+            .lists-container {
+                max-height: calc(100vh - 220px);
+                border-radius: 14px;
+            }
+
+            .lists-header {
+                padding: 12px 16px;
+                font-size: 0.9rem;
+            }
+
+            .list-item {
+                padding: 12px 14px;
+                gap: 10px;
+            }
+
+            .list-emoji {
+                font-size: 1.2rem;
+            }
+
+            .list-name a {
+                font-size: 0.9rem;
+            }
+
+            .list-meta {
+                font-size: 0.75rem;
+            }
+
+            .btn-icon img.icon-action {
+                width: 18px;
+                height: 18px;
+            }
+
+            /* Datetime box */
+            #datetime-box {
+                display: none;
+            }
+
+            /* Blobs */
+            .blob {
+                width: 400px;
+                height: 300px;
+                filter: blur(60px);
+                opacity: 0.4;
+            }
+
+            .blob.top-right {
+                top: -80px;
+                right: -150px;
+            }
+
+            .blob.bottom-left {
+                bottom: -100px;
+                left: -150px;
+            }
+        }
+
+        /* Móviles pequeños */
+        @media (max-width: 400px) {
+            .side-mini {
+                gap: 8px;
+                padding: 8px 12px;
+            }
+
+            .side-btn {
+                width: 40px;
+                height: 40px;
+            }
+
+            .side-icon {
+                width: 18px;
+                height: 18px;
+            }
+
+            .topbar {
+                padding: 6px 10px;
+            }
+
+            .go-home-btn {
+                padding: 5px 8px;
+                font-size: 0.65rem;
+            }
+
+            .main {
+                padding: 0 8px 70px;
+            }
+
+            .search-form {
+                padding: 8px 12px;
+            }
+
+            .search-input {
+                font-size: 0.85rem;
+            }
+
+            .btn-create {
+                padding: 5px 10px;
+                font-size: 0.75rem;
+            }
+
+            .lists-container {
+                max-height: calc(100vh - 200px);
+            }
+
+            .lists-header {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+
+            .list-item {
+                padding: 10px 12px;
+            }
+
+            .list-emoji {
+                font-size: 1rem;
+            }
+
+            .list-name a {
+                font-size: 0.85rem;
+            }
+
+            .list-meta {
+                font-size: 0.7rem;
+            }
+        }
+
+        /* Pantallas cortas */
+        @media (max-height: 600px) {
+            .lists-container {
+                max-height: calc(100vh - 180px);
+            }
+
+            .search-form {
+                padding: 8px 12px;
+                margin-bottom: 10px;
+            }
+
+            .lists-header {
+                padding: 10px 14px;
+            }
+
+            .list-item {
+                padding: 10px 14px;
+            }
+        }
     </style>
 </head>
 
