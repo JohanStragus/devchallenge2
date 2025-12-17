@@ -25,13 +25,17 @@
             box-sizing: border-box;
         }
 
-        body {
+        html, body {
             margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
             font-family: 'Poppins', sans-serif;
             color: var(--text-light);
             background: radial-gradient(circle at 0% 0%, var(--purple), var(--pink));
-            min-height: 100vh;
-            overflow-x: hidden;
         }
 
         /* ========== NAVBAR ========== */
@@ -108,10 +112,12 @@
         /* ========== HERO ========== */
         .hero {
             position: relative;
-            min-height: 100vh;
+            height: 100vh;
+            max-height: 100vh;
             padding: 120px 70px 60px;
             display: flex;
             align-items: center;
+            overflow: hidden;
         }
 
         /* Formas orgánicas */
@@ -177,33 +183,184 @@
         }
 
         /* ========== RESPONSIVE ========== */
+        
+        /* Tablets */
         @media (max-width: 900px) {
             header {
-                padding: 20px 24px;
+                padding: 20px 30px;
             }
 
             .hero {
-                padding: 120px 24px 50px;
+                padding: 100px 30px 40px;
             }
 
             .hero-title {
-                font-size: 2.6rem;
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
             }
 
             nav {
                 display: none;
-                /* simplificamos en móvil */
             }
 
             .auth-links a {
-                margin-left: 8px;
-                padding: 6px 12px;
+                margin-left: 10px;
+                padding: 6px 14px;
+            }
+        }
+
+        /* Móviles */
+        @media (max-width: 600px) {
+            header {
+                padding: 15px 20px;
+            }
+
+            .brand {
+                font-size: 1.25rem;
+            }
+
+            .auth-links a {
+                margin-left: 6px;
+                padding: 5px 10px;
+                font-size: 0.75rem;
+                border-radius: 12px;
+            }
+
+            .hero {
+                padding: 80px 20px 30px;
+            }
+
+            .hero-inner {
+                max-width: 100%;
+            }
+
+            .hero-title {
+                font-size: 1.75rem;
+                margin-bottom: 12px;
+            }
+
+            .hero-subtitle {
+                font-size: 0.875rem;
+                line-height: 1.5;
+                margin-bottom: 20px;
+            }
+
+            .hero-btn {
+                padding: 11px 24px;
+                font-size: 0.875rem;
+            }
+
+            .hero::before,
+            .hero::after {
+                display: none;
+            }
+        }
+
+        /* Móviles pequeños */
+        @media (max-width: 380px) {
+            header {
+                padding: 12px 15px;
+            }
+
+            .brand {
+                font-size: 1.1rem;
+            }
+
+            .auth-links a {
+                padding: 4px 8px;
+                font-size: 0.7rem;
+                margin-left: 4px;
+            }
+
+            .hero {
+                padding: 70px 15px 20px;
+            }
+
+            .hero-title {
+                font-size: 1.5rem;
+                margin-bottom: 10px;
+            }
+
+            .hero-subtitle {
+                font-size: 0.8rem;
+                line-height: 1.4;
+                margin-bottom: 16px;
+            }
+
+            .hero-btn {
+                padding: 10px 20px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Pantallas muy cortas o landscape móvil */
+        @media (max-height: 600px) {
+            header {
+                padding: 10px 20px;
+            }
+
+            .hero {
+                padding: 60px 20px 20px;
+            }
+
+            .hero-title {
+                font-size: 1.5rem;
+                margin-bottom: 8px;
+            }
+
+            .hero-subtitle {
+                font-size: 0.8rem;
+                line-height: 1.4;
+                margin-bottom: 14px;
+            }
+
+            .hero-btn {
+                padding: 10px 22px;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Extra pequeño en altura */
+        @media (max-height: 480px) {
+            header {
+                padding: 8px 15px;
+            }
+
+            .brand {
+                font-size: 1.1rem;
+            }
+
+            .auth-links a {
+                padding: 4px 8px;
+                font-size: 0.7rem;
+            }
+
+            .hero {
+                padding: 50px 15px 15px;
+            }
+
+            .hero-title {
+                font-size: 1.3rem;
+                margin-bottom: 6px;
+            }
+
+            .hero-subtitle {
+                font-size: 0.75rem;
+                margin-bottom: 12px;
+            }
+
+            .hero-btn {
+                padding: 8px 18px;
+                font-size: 0.8rem;
             }
         }
     </style>
 </head>
 
-<body style="overflow: hidden;"> <!-- Desactiva scroll -->
+<body>
 
     <header>
         <div class="brand">
@@ -221,7 +378,7 @@
         </div>
     </header>
 
-    <section class="hero" style="height: 100vh; display: flex; align-items: center;">
+    <section class="hero">
         <div class="hero-inner">
             <h1 class="hero-title">Organiza tus listas con amigos</h1>
             <p class="hero-subtitle">
