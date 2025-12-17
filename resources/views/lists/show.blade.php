@@ -670,7 +670,7 @@
                 {{-- Columnas por categoría --}}
                 @foreach($list->categories as $c)
                 @php
-                $catProducts = $productsByCategory->get($c->id_category, collect());
+                $catProducts = $productsByCategory->get($c->id_category, collect())->sortBy('completed');
                 @endphp
 
                 <section class="board-column" data-cat-id="{{ $c->id_category }}">
@@ -746,6 +746,7 @@
                 @endforeach
 
                 {{-- Columna SIN CATEGORÍA (productos sin id_category) --}}
+                @php $uncategorized = $uncategorized->sortBy('completed'); @endphp
                 @if($uncategorized->count() > 0)
                 <section class="board-column" data-cat-id="">
                     <div class="column-header">
