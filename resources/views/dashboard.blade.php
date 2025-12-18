@@ -784,7 +784,7 @@
                 <!-- BUSCADOR -->
                 <form class="search-form" id="searchForm">
                     <input id="searchInput" class="search-input" type="text"
-                        placeholder="Busca una lista por nombre..." autocomplete="off">
+                        placeholder="Crea o busca una lista..." autocomplete="off">
                     <button type="submit" class="btn-create">Crear lista</button>
                 </form>
 
