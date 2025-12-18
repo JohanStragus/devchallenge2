@@ -153,6 +153,7 @@ Route::middleware('auth')->delete('/lists/{list}', [ListController::class, 'dest
 */
 
 Route::middleware('auth')->post('/lists/{list}/categories',              [CategoryController::class, 'store']);
+Route::middleware('auth')->put('/lists/{list}/categories/{category:id_category}', [CategoryController::class, 'update']);
 Route::middleware('auth')->delete('/lists/{list}/categories/{category:id_category}', [CategoryController::class, 'destroy']);
 
 
@@ -164,6 +165,7 @@ Route::middleware('auth')->delete('/lists/{list}/categories/{category:id_categor
 */
 
 Route::middleware('auth')->post('/lists/{list}/products',                   [ProductController::class, 'store']);
+Route::middleware('auth')->put('/lists/{list}/products/{product:id_product}', [ProductController::class, 'update']);
 Route::middleware('auth')->patch('/lists/{list}/products/{product}/toggle', [ProductController::class, 'toggle']);
 Route::middleware('auth')->delete('/lists/{list}/products/{product}',       [ProductController::class, 'destroy']);
 

@@ -352,6 +352,26 @@
             gap: 4px;
         }
 
+        /* Estilos para inputs de edición inline */
+        .edit-input {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.6) !important;
+            border-radius: 6px !important;
+            padding: 4px 6px !important;
+            color: #fff !important;
+            margin: 0 !important;
+        }
+
+        .edit-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.9) !important;
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+        }
+
+        .column-title-wrapper {
+            flex-grow: 1;
+        }
+
         .card-title-row {
             display: flex;
             align-items: flex-start;
@@ -675,23 +695,29 @@
 
                 <section class="board-column" data-cat-id="{{ $c->id_category }}">
                     <div class="column-header">
-                        <div>
+                        <div class="column-title-wrapper" data-cat-id="{{ $c->id_category }}">
                             <div class="column-title">{{ $c->name }}</div>
                             <div class="column-meta">{{ $catProducts->count() }} productos</div>
                         </div>
 
-                        @can('detachFromList', [\App\Models\Category::class, $list])
-                        <form class="cat-del" action="/lists/{{ $list->id }}/categories/{{ $c->id_category }}" method="post">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-danger-link">Quitar</button>
-                        </form>
-                        @endcan
+                        <div style="display:flex; gap:4px; align-items:center;">
+                            @can('update', [$c, $list])
+                            <button type="button" class="btn-ghost cat-edit-btn" data-cat-id="{{ $c->id_category }}" data-cat-name="{{ $c->name }}">Editar</button>
+                            @endcan
+
+                            @can('detachFromList', [\App\Models\Category::class, $list])
+                            <form class="cat-del" action="/lists/{{ $list->id }}/categories/{{ $c->id_category }}" method="post">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-danger-link">Quitar</button>
+                            </form>
+                            @endcan
+                        </div>
                     </div>
 
                     <div class="column-body">
                         @forelse($catProducts as $p)
-                        <article class="trello-card">
+                        <article class="trello-card" data-product-id="{{ $p->id_product }}">
                             <div class="card-title-row">
                                 <div class="card-title">{{ $p->name }}</div>
                                 <div class="card-badges">
@@ -701,13 +727,22 @@
                                 </div>
                             </div>
 
-                            @if(!empty($p->details))
                             <div class="card-details">
+                                @if(!empty($p->details))
                                 <em>Detalles:</em> {{ $p->details }}
+                                @else
+                                <em class="muted">Sin detalles</em>
+                                @endif
                             </div>
-                            @endif
 
                             <div class="card-footer">
+                                @can('update', [\App\Models\Product::class, $list])
+                                <button type="button" class="btn-ghost prod-edit-btn" 
+                                    data-product-id="{{ $p->id_product }}" 
+                                    data-product-name="{{ $p->name }}" 
+                                    data-product-details="{{ $p->details ?? '' }}">Editar</button>
+                                @endcan
+
                                 @can('toggle', [\App\Models\Product::class, $list])
                                 <form class="prod-toggle" action="/lists/{{ $list->id }}/products/{{ $p->id_product }}/toggle" method="post">
                                     @csrf
@@ -758,7 +793,7 @@
 
                     <div class="column-body">
                         @foreach($uncategorized as $p)
-                        <article class="trello-card">
+                        <article class="trello-card" data-product-id="{{ $p->id_product }}">
                             <div class="card-title-row">
                                 <div class="card-title">{{ $p->name }}</div>
                                 <div class="card-badges">
@@ -768,13 +803,22 @@
                                 </div>
                             </div>
 
-                            @if(!empty($p->details))
                             <div class="card-details">
+                                @if(!empty($p->details))
                                 <em>Detalles:</em> {{ $p->details }}
+                                @else
+                                <em class="muted">Sin detalles</em>
+                                @endif
                             </div>
-                            @endif
 
                             <div class="card-footer">
+                                @can('update', [\App\Models\Product::class, $list])
+                                <button type="button" class="btn-ghost prod-edit-btn" 
+                                    data-product-id="{{ $p->id_product }}" 
+                                    data-product-name="{{ $p->name }}" 
+                                    data-product-details="{{ $p->details ?? '' }}">Editar</button>
+                                @endcan
+
                                 @can('toggle', [\App\Models\Product::class, $list])
                                 <form class="prod-toggle" action="/lists/{{ $list->id }}/products/{{ $p->id_product }}/toggle" method="post">
                                     @csrf
@@ -1182,6 +1226,123 @@
 
                 if (res.ok) location.reload();
                 else alert('Error borrando comentario');
+            });
+        });
+
+
+        // ======================================================
+        // 6) EDITAR PRODUCTO (inline)
+        // ======================================================
+        document.querySelectorAll('.prod-edit-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const productId = btn.dataset.productId;
+                const productName = btn.dataset.productName;
+                const productDetails = btn.dataset.productDetails || '';
+                
+                const card = btn.closest('.trello-card');
+                const titleEl = card.querySelector('.card-title');
+                const detailsEl = card.querySelector('.card-details');
+                const footerEl = card.querySelector('.card-footer');
+
+                // Guardar contenido original para cancelar
+                const originalTitleHTML = titleEl.innerHTML;
+                const originalDetailsHTML = detailsEl.innerHTML;
+                const originalFooterHTML = footerEl.innerHTML;
+
+                // Reemplazar por inputs
+                titleEl.innerHTML = `<input type="text" class="edit-input" value="${productName.replace(/"/g, '&quot;')}" style="width:100%; font-size:0.82rem;">`;
+                detailsEl.innerHTML = `<input type="text" class="edit-input" value="${productDetails.replace(/"/g, '&quot;')}" placeholder="Detalles (opcional)" style="width:100%; font-size:0.75rem;">`;
+                
+                footerEl.innerHTML = `
+                    <button type="button" class="btn btn-primary prod-save-btn">Guardar</button>
+                    <button type="button" class="btn-ghost prod-cancel-btn">Cancelar</button>
+                `;
+
+                // Guardar
+                footerEl.querySelector('.prod-save-btn').addEventListener('click', async () => {
+                    const newName = titleEl.querySelector('input').value.trim();
+                    const newDetails = detailsEl.querySelector('input').value.trim();
+
+                    if (!newName) return alert('El nombre no puede estar vacío');
+
+                    const res = await fetch(`/lists/{{ $list->id }}/products/${productId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': token,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ name: newName, details: newDetails })
+                    });
+
+                    if (res.ok) location.reload();
+                    else alert('Error al actualizar el producto');
+                });
+
+                // Cancelar
+                footerEl.querySelector('.prod-cancel-btn').addEventListener('click', () => {
+                    titleEl.innerHTML = originalTitleHTML;
+                    detailsEl.innerHTML = originalDetailsHTML;
+                    footerEl.innerHTML = originalFooterHTML;
+                    // Re-bind botón editar
+                    location.reload(); // Más simple: recargar para restaurar todo
+                });
+            });
+        });
+
+
+        // ======================================================
+        // 7) EDITAR CATEGORÍA (inline)
+        // ======================================================
+        document.querySelectorAll('.cat-edit-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const catId = btn.dataset.catId;
+                const catName = btn.dataset.catName;
+                
+                const column = btn.closest('.board-column');
+                const titleWrapper = column.querySelector('.column-title-wrapper');
+                const titleEl = titleWrapper.querySelector('.column-title');
+                const metaEl = titleWrapper.querySelector('.column-meta');
+
+                // Guardar original
+                const originalTitleHTML = titleEl.innerHTML;
+
+                // Reemplazar título por input
+                titleEl.innerHTML = `<input type="text" class="edit-input" value="${catName.replace(/"/g, '&quot;')}" style="width:100%; font-size:0.9rem;">`;
+
+                // Cambiar botón Editar por Guardar/Cancelar
+                const originalBtnHTML = btn.outerHTML;
+                btn.outerHTML = `
+                    <button type="button" class="btn btn-primary cat-save-btn" data-cat-id="${catId}">Guardar</button>
+                    <button type="button" class="btn-ghost cat-cancel-btn">Cancelar</button>
+                `;
+
+                const header = column.querySelector('.column-header');
+
+                // Guardar
+                header.querySelector('.cat-save-btn').addEventListener('click', async () => {
+                    const newName = titleEl.querySelector('input').value.trim();
+
+                    if (!newName) return alert('El nombre no puede estar vacío');
+
+                    const res = await fetch(`/lists/{{ $list->id }}/categories/${catId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': token,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ name: newName })
+                    });
+
+                    if (res.ok) location.reload();
+                    else alert('Error al actualizar la categoría');
+                });
+
+                // Cancelar
+                header.querySelector('.cat-cancel-btn').addEventListener('click', () => {
+                    location.reload(); // Más simple: recargar para restaurar todo
+                });
             });
         });
     </script>
